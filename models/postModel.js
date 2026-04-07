@@ -5,7 +5,7 @@ const postSchema = new mongoose.Schema({
     user_id:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"users",
-        required:ture
+        required:true
     },
     url:{
         type:String,
