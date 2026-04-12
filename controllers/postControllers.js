@@ -1,3 +1,4 @@
+const { useId } = require("react");
 const postModel = require("../models/postModel");
 const { uploadFile } = require("../utils/cloudnaryConfig");
 
@@ -135,3 +136,52 @@ exports.singlePostController = async (req,res)=>{
 
 }
 
+exports.toggleLikeController = async (req,res)=>{
+    try {
+        
+    const userId = req.user?.id;
+    const {id} = req.params;
+
+    if(!userId || !id)
+    {
+        return res.status(400).json({
+            message:"postId or userId is undefined",
+        });
+    };
+
+    const isPost = await postModel.findOne({
+        _id:id,
+    });
+
+    if(!isPost)
+    {
+        return res.status(404).json({
+            message:"post not found.",
+        });
+    };
+
+    const isLike = isPost.likes.includes(useId);
+
+    if(isLike)
+    {
+        isPost.likes.pull(useId);
+    }
+    else{
+        isPost.likes.push(userId);
+    }
+
+    await isPost.save();
+
+    res.status(200).json({
+        message:"like successfully.",
+        likeSCount:isPost.likes.length,
+    })
+
+    
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message:"internal server error."
+        })
+    }
+}
