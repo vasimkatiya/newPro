@@ -4,6 +4,8 @@ const authRouter = require('./routes/auth.routes');
 const cookieParser = require('cookie-parser');
 const postRouter = require('./routes/post.routes');
 const commentRouter = require('./routes/comment.routes');
+const followRouter = require('./routes/follow.routes');
+const userRouter = require('./routes/user.routes');
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.get('/',(req,res)=> res.send("<h1>working successfully.</h1>"))
 app.use("/api/auth",authRouter);
 app.use('/api/post',postRouter);
 app.use('/api/comment',commentRouter);
+app.use('/api/follow',followRouter);
+app.use('/api/user',userRouter)
 
 app.listen(3000,()=>{
     console.log("localhost : 3000 , is running......");

@@ -1,4 +1,3 @@
-const { useId } = require("react");
 const postModel = require("../models/postModel");
 const { uploadFile } = require("../utils/cloudnaryConfig");
 
@@ -151,7 +150,7 @@ exports.toggleLikeController = async (req,res)=>{
 
     const isPost = await postModel.findOne({
         _id:id,
-    });
+    }).populate();
 
     if(!isPost)
     {
@@ -160,11 +159,11 @@ exports.toggleLikeController = async (req,res)=>{
         });
     };
 
-    const isLike = isPost.likes.includes(useId);
+    const isLike = isPost.likes.includes(userId);
 
     if(isLike)
     {
-        isPost.likes.pull(useId);
+        isPost.likes.pull(userId);
     }
     else{
         isPost.likes.push(userId);
@@ -174,7 +173,8 @@ exports.toggleLikeController = async (req,res)=>{
 
     res.status(200).json({
         message:"like successfully.",
-        likeSCount:isPost.likes.length,
+        likesCount:isPost.likes.length,
+        isPost,
     })
 
     
