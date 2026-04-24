@@ -13,7 +13,7 @@ const { allUser } = require('./controllers/userController');
 const authHandler = require('./middleware/auth.middleware');
 
 app.use(cors({
-    origin : 'https://sociogram83.netlify.app/',
+    origin : 'https://sociogram83.netlify.app',
     credentials : true
 }));
 app.use(cookieParser());
