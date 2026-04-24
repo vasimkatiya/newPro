@@ -17,6 +17,6 @@ postRouter.post('/create',upload.single('image'),authHandler,createPostControlle
 postRouter.get('/all',authHandler,getPostsController);
 postRouter.delete('/:id',authHandler,deletePostController);
 postRouter.get('/:id',authHandler,singlePostController);
-postRouter.get("/:id/likes",authHandler,toggleLikeController);
+postRouter.post("/:id/likes",authHandler,toggleLikeController);
 
 module.exports = postRouter;

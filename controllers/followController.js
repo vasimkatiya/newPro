@@ -45,10 +45,11 @@ exports.toggleFollowController = async (req, res) => {
             following: followingId
         });
         const followingCount = await followModel.countDocuments({
-            follower: followerId
+            follower: followingId
         });
 
         return res.status(200).json({
+            isFollow:false,
             message: "unfollow successfully",
             followersCount,
             followingCount
@@ -65,11 +66,12 @@ exports.toggleFollowController = async (req, res) => {
         following: followingId
     });
     const followingCount = await followModel.countDocuments({
-        follower: followerId
+        follower: followingId
     });
 
 
     res.status(200).json({
+        isFollow:true,
         message: "follow successfully",
         followersCount,
         followingCount,

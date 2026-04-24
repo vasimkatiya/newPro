@@ -53,7 +53,7 @@ exports.getPostsController = async (req,res)=>{
     const limit = 7;
     const offset = (page-1)*limit;
 
-    const fetchPost = await postModel.find().sort({createdAt:-1}).skip(offset).limit(limit);
+    const fetchPost = await postModel.find().sort({createdAt:-1}).skip(offset).limit(limit).populate("user_id");;
 
     if(!fetchPost)
     {
@@ -70,7 +70,7 @@ exports.getPostsController = async (req,res)=>{
     }
 
     res.status(200).json({
-        message:'post fetched successfully.',
+        message:'fetched successfully.',
         fetchPost,
     });
 }
@@ -89,7 +89,7 @@ exports.deletePostController = async (req,res)=>{
     if(deletePost.deletedCount == 0 )
     {
         return res.status(400).json({
-            message:'post delete not found.',
+            message:'only post creator can delete the post.',
         });
     };
 
@@ -129,59 +129,49 @@ exports.singlePostController = async (req,res)=>{
     };
 
     res.status(200).json({
-        message:'post fetched successfully.',
+        message:'fetched successfully.',
         singlePost,
     });
 
 }
 
-exports.toggleLikeController = async (req,res)=>{
+
+exports.toggleLikeController = async (req, res) => {
     try {
-        
-    const userId = req.user?.id;
-    const {id} = req.params;
+        const userId = req.user.id;
+        const postId = req.params.id;
 
-    if(!userId || !id)
-    {
-        return res.status(400).json({
-            message:"postId or userId is undefined",
+        const post = await postModel.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({
+                message: "post not found"
+            });
+        }
+
+        const alreadyLiked = post.likes.some(
+            id => id.toString() === userId
+        );
+
+        if (alreadyLiked) {
+            post.likes = post.likes.filter(
+                id => id.toString() !== userId
+            );
+        } else {
+            post.likes.push(userId);
+        }
+
+        await post.save();
+
+        res.status(200).json({
+            message: "success",
+            likes: post.likes
         });
-    };
 
-    const isPost = await postModel.findOne({
-        _id:id,
-    }).populate();
-
-    if(!isPost)
-    {
-        return res.status(404).json({
-            message:"post not found.",
-        });
-    };
-
-    const isLike = isPost.likes.includes(userId);
-
-    if(isLike)
-    {
-        isPost.likes.pull(userId);
-    }
-    else{
-        isPost.likes.push(userId);
-    }
-
-    await isPost.save();
-
-    res.status(200).json({
-        message:"like successfully.",
-        likesCount:isPost.likes.length,
-        isPost,
-    })
-
-    
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            message:"internal server error."
-        })
+        console.log(err); // 🔥 VERY IMPORTANT
+        res.status(500).json({
+            message: "server error"
+        });
     }
-}
+};

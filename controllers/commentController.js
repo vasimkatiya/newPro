@@ -70,9 +70,9 @@ exports.getCommentController = async (req,res)=>{
     
     const comments = await commentModel.find({
         post_id:id,
-    });
+    }).populate('post_id user_id');
 
-    if(comments.length == 0)
+    if(comments.length === 0)
         {
             return res.status(200).json({
                 message:'comments not fetched.',
@@ -94,44 +94,37 @@ exports.getCommentController = async (req,res)=>{
 
 }
 
-exports.deleteCommentController = async (req,res)=>{
-
+exports.deleteCommentController = async (req, res) => {
     try {
-        
-        const id = req.params.commentId;
+        const id = req.params?.id;
         const userId = req.user?.id;
-        const comment = await commentModel.findOne({
-            _id:id,
-            user_id:userId,
-        });
 
-        let deleteComments = null;
-
-        if(comment)
-        {
-            deleteComments = await commentModel.deleteOne({
-                _id:id,
-                user_id:userId
+        if (!id || !userId) {
+            return res.status(400).json({
+                message: "commentId and user auth required"
             });
         }
 
-        if(deleteComments.deletedCount == 0)
-        {
-            return res.status(400).json({
-                message:'detele fails'
+        const deleted = await commentModel.findOneAndDelete({
+            _id: id,
+            user_id: userId
+        });
+
+        if (!deleted) {
+            return res.status(404).json({
+                message: "only comment creator can delete comment"
             });
-        };
+        }
 
         res.status(200).json({
-            message:'delete successfully.',
-            deleteComments,
-        })
+            message: "comment deleted successfully",
+            deleted
+        });
 
     } catch (err) {
         console.error(err);
         return res.status(500).json({
-            message:'internal server error'
-        })
+            message: "internal server error"
+        });
     }
-
-}
+};

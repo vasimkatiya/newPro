@@ -118,8 +118,10 @@ exports.userSearchController = async (req,res)=>{
 
        
        const users = await userModel.find({
-        username : {$regex:query , $options :"i"}
+        username : {$regex:query , $options :"i"},
        });
+
+
 
        if(users.length === 0)
        {
@@ -144,3 +146,21 @@ exports.userSearchController = async (req,res)=>{
     }
 
 }
+
+exports.allUser = async (req, res) => {
+  try {
+    const users = await userModel.find({_id : {$ne : req.user?.id}}).select("-password");
+
+    res.json({
+      message: "All users fetched",
+      users,
+    });
+
+  } catch (error) {
+    console.error(error.message);
+
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};

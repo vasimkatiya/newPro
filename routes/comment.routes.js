@@ -7,6 +7,6 @@ const commentRouter = Router();
 
 commentRouter.post('/:id/comments',authHandler,postCommentController);
 commentRouter.get('/:id/comments',getCommentController);
-commentRouter.delete("/:commentId",deleteCommentController);
+commentRouter.delete("/:id",authHandler,deleteCommentController);
 
 module.exports = commentRouter;

@@ -4,6 +4,6 @@ const { toggleFollowController } = require("../controllers/followController");
 
 const followRouter = Router();
 
-followRouter.get('/:id',authHandler,toggleFollowController);
+followRouter.post('/:id',authHandler,toggleFollowController);
 
-module.exports = followRouter;
+module.exports = followRouter ;

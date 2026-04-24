@@ -6,9 +6,16 @@ const postRouter = require('./routes/post.routes');
 const commentRouter = require('./routes/comment.routes');
 const followRouter = require('./routes/follow.routes');
 const userRouter = require('./routes/user.routes');
+const messageRouter = require('./routes/message.routes');
+const {app,server,io} = require('./server');
+const cors = require('cors');
+const { allUser } = require('./controllers/userController');
+const authHandler = require('./middleware/auth.middleware');
 
-const app = express();
-
+app.use(cors({
+    origin : 'http://localhost:5173',
+    credentials : true
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
@@ -21,8 +28,10 @@ app.use("/api/auth",authRouter);
 app.use('/api/post',postRouter);
 app.use('/api/comment',commentRouter);
 app.use('/api/follow',followRouter);
-app.use('/api/user',userRouter)
+app.use('/api/user',userRouter);
+app.use('/api/message',messageRouter);
+app.use('/api/all',authHandler,allUser)
 
-app.listen(3000,()=>{
+server.listen(3000, () => {
     console.log("localhost : 3000 , is running......");
 });

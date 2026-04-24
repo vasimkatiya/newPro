@@ -94,10 +94,11 @@ exports.loginController = async (req,res)=>{
         process.env.JWT_KEY
        );
 
-       res.cookie("token",token,{
-          httpOnly: true, 
-          secure: false,         
-       });
+       res.cookie("token", token, {
+        httpOnly: true,
+        secure: false, // true in production (HTTPS)
+        sameSite: "lax"
+        });
 
        res.status(200).json({
         message:'user successfully login',
